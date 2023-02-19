@@ -139,10 +139,19 @@ void ABaseGeometryActor::OnTimerFired()
 		const FLinearColor newColor = FLinearColor::MakeRandomColor();
 		UE_LOG(LogBaseGeometry, Display, TEXT("TimerCount: %i, Color to set up: %s"), TimerCount, *newColor.ToString());
 		setColor(newColor);
+		OnColorChanged.Broadcast(newColor, GetName());
 	}
 	else
 	{
 		UE_LOG(LogBaseGeometry, Warning, TEXT("TIMER WAS STOPPED"));
 		GetWorldTimerManager().ClearTimer(TimerHandle);
+		OnTimerFinished.Broadcast(this);
 	}
+}
+
+void ABaseGeometryActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	UE_LOG(LogBaseGeometry, Warning, TEXT("ACTOR WAS DEAD"));
 }
