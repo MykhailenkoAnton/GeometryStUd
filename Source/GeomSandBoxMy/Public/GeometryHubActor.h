@@ -47,9 +47,18 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+private:
+
+	ABaseGeometryActor* NonePropertyActor;
+
+	UPROPERTY()
+	ABaseGeometryActor* PropertyActor;
+
 	void DoActorSpawn1();
 	void DoActorSpawn2();
 	void DoActorSpawn3();
+
+	void DoActorSpawn4();
 
 	UFUNCTION()
 	void OnColorChanged(const FLinearColor& Color, const FString& Name);

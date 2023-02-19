@@ -21,7 +21,9 @@ void AGeometryHubActor::BeginPlay()
 	
 	//DoActorSpawn1();
 	// DoActorSpawn2();
-	DoActorSpawn3();
+	//DoActorSpawn3();
+
+	DoActorSpawn4();
 }
 
 // Called every frame
@@ -29,6 +31,8 @@ void AGeometryHubActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UE_LOG(LogGeometryHub, Warning, TEXT("PROPERTY %i, is valid %i"), PropertyActor != nullptr, IsValid(PropertyActor));
+	UE_LOG(LogGeometryHub, Error, TEXT("NON PROPERTY %i, is valid %i"), NonePropertyActor != nullptr, IsValid(NonePropertyActor));
 }
 
 void AGeometryHubActor::DoActorSpawn1()
@@ -119,4 +123,14 @@ void AGeometryHubActor::OnTimerFinished(AActor* Actor)
 	Geometry->Destroy();
 	//Geometry->SetLifeSpan(2.0f);
 	
+}
+
+void AGeometryHubActor::DoActorSpawn4()
+{
+	if (!GetWorld()) return;
+	FTransform GeometryTransform = FTransform(FRotator::ZeroRotator, FVector(770.0f, 300.0f, 300.0f));
+	NonePropertyActor = GetWorld()->SpawnActor<ABaseGeometryActor>(GeometryClass, GeometryTransform);
+
+	GeometryTransform = FTransform(FRotator::ZeroRotator, FVector(770.0f, 700.0f, 300.0f));
+	PropertyActor = GetWorld()->SpawnActor<ABaseGeometryActor>(GeometryClass, GeometryTransform);
 }
