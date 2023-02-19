@@ -3,6 +3,8 @@
 
 #include "BaseGeometryActor.h"
 #include "Engine/Engine.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "TimerManager.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogBaseGeometry, All, All)
 
@@ -27,6 +29,11 @@ void ABaseGeometryActor::BeginPlay()
 	//printTransform();
 	//printTypes();
 	//printStringTypes();
+
+	setColor(GeometryData.Color);
+	
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ABaseGeometryActor::OnTimerFired, GeometryData.TimerRate, true);
+
 }
 
 // Called every frame
@@ -36,6 +43,7 @@ void ABaseGeometryActor::Tick(float DeltaTime)
 	 
 	HandleMovement();
 
+	
 }
 
 void ABaseGeometryActor::printTypes()
@@ -61,9 +69,11 @@ void ABaseGeometryActor::printStringTypes()
 
 	UE_LOG(LogBaseGeometry, Warning, TEXT("%s"), *stat);
 
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, Name);
-	GEngine->AddOnScreenDebugMessage(-1, 19.0f, FColor::Red, stat, true, FVector2D(1.5f, 1.5f));
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, Name);
+		GEngine->AddOnScreenDebugMessage(-1, 19.0f, FColor::Red, stat, true, FVector2D(1.5f, 1.5f));
+	}
 }
 
 void ABaseGeometryActor::printTransform()
@@ -89,12 +99,15 @@ void ABaseGeometryActor::HandleMovement()
 	{
 		case EMovementType::Sin:
 		{
-			float time = GetWorld()->GetTimeSeconds();
+			if (GetWorld())
+			{
+				float time = GetWorld()->GetTimeSeconds();
 
-			FVector CurrentLocation = GetActorLocation();
-			CurrentLocation.Z = InitalLocation.Z + GeometryData.Amplitude * FMath::Sin(GeometryData.Freequency * time);
+				FVector CurrentLocation = GetActorLocation();
+				CurrentLocation.Z = InitalLocation.Z + GeometryData.Amplitude * FMath::Sin(GeometryData.Freequency * time);
 
-			SetActorLocation(CurrentLocation);
+				SetActorLocation(CurrentLocation);
+			}
 		}
 		break;
 
@@ -102,5 +115,34 @@ void ABaseGeometryActor::HandleMovement()
 			break;
 		default:
 			break;
+	}
+}
+
+void ABaseGeometryActor::setColor(const FLinearColor& color)
+{
+	if (!BaseMesh)
+	{
+		return;
+	}
+
+	UMaterialInstanceDynamic* DynMaterial = BaseMesh->CreateAndSetMaterialInstanceDynamic(0);
+	if (DynMaterial)
+	{
+		DynMaterial->SetVectorParameterValue("Color", color);
+	}
+}
+
+void ABaseGeometryActor::OnTimerFired()
+{
+	if(++TimerCount <= MaxTimerCount)
+	{
+		const FLinearColor newColor = FLinearColor::MakeRandomColor();
+		UE_LOG(LogBaseGeometry, Display, TEXT("TimerCount: %i, Color to set up: %s"), TimerCount, *newColor.ToString());
+		setColor(newColor);
+	}
+	else
+	{
+		UE_LOG(LogBaseGeometry, Warning, TEXT("TIMER WAS STOPPED"));
+		GetWorldTimerManager().ClearTimer(TimerHandle);
 	}
 }

@@ -27,6 +27,12 @@ struct FGeometryData
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
 		EMovementType MoveType = EMovementType::Static;
+
+	UPROPERTY(EditAnywhere, Category = "Design")
+	FLinearColor Color = FLinearColor::Black;
+
+	UPROPERTY(EditAnywhere, Category = "Design")
+	float TimerRate = 3.0f;
 };
 
 UCLASS()
@@ -40,6 +46,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* BaseMesh;
+
+	void SetGeometryData(const FGeometryData& data) { GeometryData = data; }
 
 protected:
 	// Called when the game starts or when spawned
@@ -74,5 +82,12 @@ private:
 
 	void HandleMovement();
 
+	void setColor(const FLinearColor& color);
+
 	FVector InitalLocation;
+	FTimerHandle TimerHandle;
+
+	const int32 MaxTimerCount = 5;
+	int32 TimerCount = 0;
+	void OnTimerFired();
 };
