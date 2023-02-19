@@ -13,5 +13,8 @@ UCLASS()
 class GEOMSANDBOXMY_API AGeomSandBoxMyGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+	AGeomSandBoxMyGameModeBase();
 	
 };
